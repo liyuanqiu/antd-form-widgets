@@ -6,8 +6,6 @@ import {
 } from 'antd/lib/select';
 import { Key } from 'rc-select/lib/interface/generator';
 
-import('antd/es/select/style');
-
 export interface Option {
   key?: string;
   label?: ReactNode;
