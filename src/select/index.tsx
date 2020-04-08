@@ -41,20 +41,23 @@ export function Select<ValueType extends AntdSelectValue = AntdSelectValue>({
   // props from InternalSelectProps
   fetchOptions,
   // discarded props
+  filterOption,
   loading,
   onSearch,
   // rest props for antd select
   ...antdSelectProps
 }: SelectProps<ValueType>) {
-  const discardedProps = useMemo(() => ({ loading, onSearch }), [
+  const discardedProps = useMemo(() => ({ loading, onSearch, filterOption }), [
     loading,
     onSearch,
+    filterOption,
   ]);
   useDiscardedPropsWarning(discardedProps);
+  const [keyword, setKeyword] = useState('');
   const [fetching, setFetching] = useState(false);
   const [options, setOptions] = useState<Option[]>([]);
   useEffect(() => {
-    const f = fetchOptions();
+    const f = fetchOptions(keyword);
     if (f instanceof Promise) {
       setFetching(true);
       f.then(setOptions)
@@ -64,9 +67,14 @@ export function Select<ValueType extends AntdSelectValue = AntdSelectValue>({
     } else {
       setOptions(f);
     }
-  }, [fetchOptions]);
+  }, [fetchOptions, keyword]);
   return (
-    <AntdSelect<ValueType> {...antdSelectProps} loading={fetching}>
+    <AntdSelect<ValueType>
+      {...antdSelectProps}
+      loading={fetching}
+      filterOption={false}
+      onSearch={setKeyword}
+    >
       {options.map(({ label, value, key }) => (
         <AntdSelect.Option key={key ?? `${value}`} value={value}>
           {label ?? value}
