@@ -35,27 +35,28 @@ function useDiscardedPropsWarning(props: { [k: string]: unknown }) {
   }, [props]);
 }
 
+/**
+ * All data loaded from remote
+ * Filter locally
+ */
 export function Select<ValueType extends AntdSelectValue = AntdSelectValue>({
   // props from InternalSelectProps
   fetchOptions,
   // discarded props
-  filterOption,
   loading,
-  onSearch,
+  optionFilterProp,
   // rest props for antd select
   ...antdSelectProps
 }: SelectProps<ValueType>) {
-  const discardedProps = useMemo(() => ({ loading, onSearch, filterOption }), [
+  const discardedProps = useMemo(() => ({ loading, optionFilterProp }), [
     loading,
-    onSearch,
-    filterOption,
+    optionFilterProp,
   ]);
   useDiscardedPropsWarning(discardedProps);
-  const [keyword, setKeyword] = useState('');
   const [fetching, setFetching] = useState(false);
   const [options, setOptions] = useState<Option[]>([]);
   useEffect(() => {
-    const f = fetchOptions(keyword);
+    const f = fetchOptions();
     if (f instanceof Promise) {
       setFetching(true);
       f.then(setOptions)
@@ -65,13 +66,12 @@ export function Select<ValueType extends AntdSelectValue = AntdSelectValue>({
     } else {
       setOptions(f);
     }
-  }, [fetchOptions, keyword]);
+  }, [fetchOptions]);
   return (
     <AntdSelect<ValueType>
       {...antdSelectProps}
       loading={fetching}
-      filterOption={false}
-      onSearch={setKeyword}
+      optionFilterProp="children"
     >
       {options.map(({ label, value, key }) => (
         <AntdSelect.Option key={key ?? `${value}`} value={value}>
