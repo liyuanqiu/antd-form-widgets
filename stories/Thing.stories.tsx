@@ -4,6 +4,7 @@ import { Select, OptionsFetcher } from '../src';
 
 import('antd/es/form/style');
 import('antd/es/button/style');
+import('antd/es/select/style');
 
 export default {
   title: 'Widgets',
